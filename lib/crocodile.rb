@@ -8,7 +8,7 @@ class Crocodile
 
   def self.start
     selenium = Selenium::RemoteControl::RemoteControl.new(HOST, PORT, TIMEOUT)
-    selenium.jar_file = File.join(File.dirname(__FILE__), "selenium-server.jar")
+    selenium.jar_file = File.join(File.dirname(__FILE__), '..', 'vendor', "selenium-server.jar")
     selenium.start :background => true
     TCPSocket.wait_for_service :host => HOST, :port => PORT
   end
@@ -29,7 +29,7 @@ class Crocodile
       :url => host)
     browser.start_new_browser_session
     browser.open url
-    browser.get_eval "window.resizeTo(#{options[:width]},#{options[:hieght]});" if (options[:width] && options[:height])
+    browser.get_eval "window.resizeTo(#{options[:width]},#{options[:height]});" if (options[:width] && options[:height])
     yield
     browser.capture_entire_page_screenshot File.join(File.expand_path('.'), dest), ''
     browser.close_current_browser_session    
