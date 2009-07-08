@@ -5,10 +5,12 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "crocodile"
-    gem.summary = %Q{TODO}
+    gem.summary = %Q{ Crocodile is a quick tool for taking screenshots using selenium-client }
     gem.email = "jeff@baobabhealth.org"
     gem.homepage = "http://github.com/jeffrafter/crocodile"
     gem.authors = ["Jeff Rafter"]
+    gem.add_dependency('selenium-client', '= 1.2.14')
+    gem.files.include('vendor/*')
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 

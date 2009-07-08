@@ -1,6 +1,6 @@
 = crocodile
 
-Description goes here.
+Crocodile is a simple lib and executable for taking screenshots. Make it better.
 
 == Copyright
 

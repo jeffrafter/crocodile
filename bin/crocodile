@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+if ARGV.size == 0 || ARGV.include?('--help')
+  puts "Usage: crocodile [options] source dest" 
+  puts ""
+  puts "  --start          Start the selenium server"
+  puts "  --stop           Stop the selenium server"
+  puts "  --width=WIDTH    Set the width of the window"
+  puts "  --height=HEIGHT  Set the height of the window"
+  puts "  --help"
+  exit
+end
+
+# Grab the params
+dest = ARGV[ARGV.size-1] rescue nil
+source = ARGV[ARGV.size-2] rescue nil
+
+HOST = "0.0.0.0"
+PORT = 4444
+TIMEOUT = 60
+
+raise "You're not doing it right" if source.empty? || source ~= /^\-\-/ || dest.empty?
+
+require 'rubygems'
+require 'selenium/client'
+
+def start_selenium
+  puts "Starting Selenium"
+  selenium = Selenium::RemoteControl::RemoteControl.new(HOST, PORT, TIMEOUT)
+  selenium.jar_file = File.join(File.dirname(__FILE__), "selenium-server.jar")
+  selenium.start :background => true
+  puts "Waiting for Selenium..."
+  TCPSocket.wait_for_service :host => HOST, :port => PORT
+  puts "Selenium Remote Control Ready"
+end
+
+def stop_selenium
+  puts "Stopping Selenium"
+  selenium = Selenium::RemoteControl::RemoteControl.new(HOST, PORT, TIMEOUT)
+  selenium.stop
+  TCPSocket.wait_for_service_termination :host => HOST, :port => PORT
+end
+
+begin
+  start_selenium if ARGV.include? '--start'
+  browser = Selenium::Client::Driver.new( 
+    :host => HOST,
+    :port => PORT,
+    :timeout_in_second => TIMEOUT,
+    :browser => "*firefox",
+    :url => "file://")
+  browser.start_new_browser_session
+  browser.open File.expand_path(source)
+  browser.get_eval "window.resizeTo(1024,768);"
+  browser.capture_entire_page_screenshot File.join(File.expand_path('.'), dest), ''
+  browser.close_current_browser_session    
+rescue
+  puts "Check the Selenium log for errors and make sure that the Selenium server is running using the --start and --stop options"  
+ensure
+  stop_selenium if ARGV.include? '--stop'
+end
+
+puts "Done"
