@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{crocodile}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jeff Rafter"]
@@ -21,9 +21,12 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "bin/crocodile",
+     "crocodile.gemspec",
      "lib/crocodile.rb",
      "test/crocodile_test.rb",
      "test/test_helper.rb",
+     "vendor/selenium-server.jar",
      "vendor/selenium-server.jar"
   ]
   s.homepage = %q{http://github.com/jeffrafter/crocodile}
