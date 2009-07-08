@@ -12,8 +12,8 @@ end
 
 # Grab the params
 params = ARGV.reject{|arg| arg =~ /^--/}
-dest = params[0] rescue nil
-source = params[1] rescue nil
+source = params[0] rescue nil
+dest = params[1] rescue nil
 
 raise "You're not doing it right" if source.empty? || dest.empty?
 
