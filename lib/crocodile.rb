@@ -30,7 +30,7 @@ class Crocodile
     browser.start_new_browser_session
     browser.open url
     browser.get_eval "window.resizeTo(#{options[:width]},#{options[:height]});" if (options[:width] && options[:height])
-    yield if block
+    yield browser if block
     browser.capture_entire_page_screenshot File.join(File.expand_path('.'), dest), ''
     browser.close_current_browser_session    
   ensure

@@ -6,6 +6,7 @@ if ARGV.size == 0 || ARGV.include?('--help')
   puts "  --stop           Stop the selenium server"
   puts "  --width=WIDTH    Set the width of the window"
   puts "  --height=HEIGHT  Set the height of the window"
+  puts "  --script=SCRIPT  Execute arbitrary javascript in the window"
   puts "  --help"
   exit
 end
@@ -19,12 +20,16 @@ raise "You're not doing it right" if source.empty? || dest.empty?
 
 require 'rubygems'
 require 'crocodile'
+require 'net/http'
 
-width = ARGV.select{|arg| arg =~ /^--width=/}.first
-width = width.gsub(/^--width=/, '') if width
+def opt(name)
+  p = ARGV.select{|arg| arg =~ /^--#{name}=/}.first
+  p.gsub(/^--#{name}=/, '') if p
+end
 
-height = ARGV.select{|arg| arg =~ /^--height=/}.first
-height = height.gsub(/^--height=/, '') if height
+width = opt "width"
+height = opt "height"
+script = opt "script"
 
 puts "Starting Selenium"
 options = {}
@@ -32,6 +37,16 @@ options[:start] = true if ARGV.include? '--start'
 options[:stop] = true if ARGV.include? '--start'
 options[:width] = width if width
 options[:height] = height if height
-Crocodile.snap("file://", File.expand_path(source), dest, options)
 
+source_uri = URI.parse(source)
+if (source_uri.relative?)
+  source_path = File.expand_path(source)
+  source_base = "file://"
+else
+  source_path = source_uri.path
+  source_base = source.gsub(Regexp.new(source_path + "$"), '')
+end  
+Crocodile.snap(source_base, source_path, dest, options) do |browser|
+  browser.get_eval script if script
+end
 puts "Done"

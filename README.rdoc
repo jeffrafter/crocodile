@@ -1,6 +1,27 @@
-= crocodile
+= Crocodile
 
 Crocodile is a simple lib and executable for taking screenshots. Make it better.
+It relies on the selenium-client gem. Currently however, it is only compatabile
+with the selenium-client -v=1.2.14. Newer versions of the selenium gem are
+not yet supported. 
+
+  $ sudo gem install selenium-client -v=1.2.14
+  $ sudo gem install crocodile
+  
+Once you have installed crocodile and the selenium-client gem you can quickly
+snap shots of mockups from the commandline:
+
+  $ crocodile --start --stop --width=1024 --height=768 mockup.html mockup.png
+  
+This tells crocodile to start the Selenium Remote Control Server in the
+background (and stop it when the task is completed). It tells it to load the 
+file mockup.html (because no protocol is included, the script assumes this is 
+on the local filesystem). Once loaded, the browser window will be resized to 
+1024 pixels by 768 pixels. The screenshot will be saved as mockup.png.
+
+You can get basic help as well
+
+  $ crocodile --help
 
 == Copyright
 
