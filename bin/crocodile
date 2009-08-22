@@ -9,6 +9,7 @@ if ARGV.size == 0 || ARGV.include?('--help')
   puts "  --script=SCRIPT    Execute arbitrary javascript in the window"
   puts "  --control=CODE     Execute control code"
   puts "  --timeout=TIMEOUT  Stop waiting"
+  puts "  --browser=BROWSER  Use something like *firefox /usr/bin/firefox-bin"
   puts "  --help"
   exit
 end
@@ -27,13 +28,15 @@ height = opt "height"
 script = opt "script"
 control = opt "control"
 timeout = opt "timeout"
+browser = opt "browser"
 
 options = {}
 options[:start] = true if ARGV.include? '--start'
-options[:stop] = true if ARGV.include? '--start'
+options[:stop] = true if ARGV.include? '--stop'
 options[:width] = width if width
 options[:height] = height if height
 options[:timeout] = timeout if timeout
+options[:browser] = browser if browser
 
 # Grab the params
 params = ARGV.reject{|arg| arg =~ /^--/}
@@ -41,7 +44,7 @@ source = params[0] rescue nil
 dest = params[1] rescue nil
 if source.nil? || dest.nil?
   Crocodile.start if options[:start]
-  Crocodile.stop if options[:start]
+  Crocodile.stop if options[:stop]
   exit
 end
 

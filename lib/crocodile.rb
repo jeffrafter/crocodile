@@ -4,7 +4,7 @@ class Crocodile
 
   HOST = "0.0.0.0"
   PORT = 4444
-  TIMEOUT = 60
+  TIMEOUT = 10
 
   def self.start
     selenium = Selenium::RemoteControl::RemoteControl.new(HOST, PORT, TIMEOUT)
@@ -25,13 +25,16 @@ class Crocodile
       :host => HOST || options[:host],
       :port => PORT || options[:port],
       :timeout_in_second => TIMEOUT || options[:timeout],
-      :browser => "*firefox",
+      :browser => options[:browser] || "*firefox",
       :url => host)
     browser.start_new_browser_session
     browser.open url
-    browser.get_eval "window.resizeTo(#{options[:width]},#{options[:height]});" if (options[:width] && options[:height])
+    browser.wait_for_page_to_load(TIMEOUT || options[:timeout])
+    if (options[:width] && options[:height])
+      browser.get_eval("window.resizeTo(#{options[:width]},#{options[:height]});") 
+    end  
     yield browser if block
-    browser.capture_entire_page_screenshot File.join(File.expand_path('.'), dest), :wait_for => :page
+    browser.capture_entire_page_screenshot File.join(File.expand_path('.'), dest), ''
     browser.close_current_browser_session    
   ensure
     stop if options[:stop]
