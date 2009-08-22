@@ -2,21 +2,16 @@
 if ARGV.size == 0 || ARGV.include?('--help')
   puts "Usage: crocodile [options] source dest" 
   puts ""
-  puts "  --start          Start the selenium server"
-  puts "  --stop           Stop the selenium server"
-  puts "  --width=WIDTH    Set the width of the window"
-  puts "  --height=HEIGHT  Set the height of the window"
-  puts "  --script=SCRIPT  Execute arbitrary javascript in the window"
+  puts "  --start            Start the selenium server"
+  puts "  --stop             Stop the selenium server"
+  puts "  --width=WIDTH      Set the width of the window"
+  puts "  --height=HEIGHT    Set the height of the window"
+  puts "  --script=SCRIPT    Execute arbitrary javascript in the window"
+  puts "  --control=CODE     Execute control code"
+  puts "  --timeout=TIMEOUT  Stop waiting"
   puts "  --help"
   exit
 end
-
-# Grab the params
-params = ARGV.reject{|arg| arg =~ /^--/}
-source = params[0] rescue nil
-dest = params[1] rescue nil
-
-raise "You're not doing it right" if source.empty? || dest.empty?
 
 require 'rubygems'
 require 'crocodile'
@@ -30,13 +25,25 @@ end
 width = opt "width"
 height = opt "height"
 script = opt "script"
+control = opt "control"
+timeout = opt "timeout"
 
-puts "Starting Selenium"
 options = {}
 options[:start] = true if ARGV.include? '--start'
 options[:stop] = true if ARGV.include? '--start'
 options[:width] = width if width
 options[:height] = height if height
+options[:timeout] = timeout if timeout
+
+# Grab the params
+params = ARGV.reject{|arg| arg =~ /^--/}
+source = params[0] rescue nil
+dest = params[1] rescue nil
+if source.nil? || dest.nil?
+  Crocodile.start if options[:start]
+  Crocodile.stop if options[:start]
+  exit
+end
 
 source_uri = URI.parse(source)
 if (source_uri.relative?)
@@ -46,7 +53,8 @@ else
   source_path = source_uri.path
   source_base = source.gsub(Regexp.new(source_path + "$"), '')
 end  
+
 Crocodile.snap(source_base, source_path, dest, options) do |browser|
+  eval control if control
   browser.get_eval script if script
 end
-puts "Done"
